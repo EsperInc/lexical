@@ -21,6 +21,7 @@ import {SharedHistoryContext} from './context/SharedHistoryContext';
 import Editor from './Editor';
 import logo from './images/logo.svg';
 import PlaygroundNodes from './nodes/PlaygroundNodes';
+import {$createReadOnlyNode} from './nodes/ReadOnlyNode';
 import DocsPlugin from './plugins/DocsPlugin';
 import PasteLogPlugin from './plugins/PasteLogPlugin';
 import {TableContext} from './plugins/TablePlugin';
@@ -59,6 +60,11 @@ function $prepopulatedRichText() {
       $createTextNode(' formats.'),
     );
     root.append(paragraph);
+
+    const readOnlyNode = $createReadOnlyNode();
+    readOnlyNode.append($createTextNode('===== SOME UNEDITABLE TEXT ====='));
+    root.append(readOnlyNode);
+
     const paragraph2 = $createParagraphNode();
     paragraph2.append(
       $createTextNode(
@@ -115,15 +121,11 @@ function $prepopulatedRichText() {
 
 function App(): JSX.Element {
   const {
-    settings: {isCollab, emptyEditor, measureTypingPerf},
+    settings: {isCollab, measureTypingPerf},
   } = useSettings();
 
   const initialConfig = {
-    editorState: isCollab
-      ? null
-      : emptyEditor
-      ? undefined
-      : $prepopulatedRichText,
+    editorState: isCollab ? null : $prepopulatedRichText,
     namespace: 'Playground',
     nodes: [...PlaygroundNodes],
     onError: (error: Error) => {
